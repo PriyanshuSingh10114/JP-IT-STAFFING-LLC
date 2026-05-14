@@ -1,0 +1,36 @@
+# Backend Dockerfile - Node.js + Playwright
+FROM node:20-bookworm-slim
+
+# Install required system dependencies for Playwright
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY backend/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application code
+COPY backend/src ./src
+
+# Create required directories
+RUN mkdir -p logs screenshots sessions
+
+# Expose backend port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:5000/api/health || exit 1
+
+# Start the application
+CMD ["node", "src/index.js"]
