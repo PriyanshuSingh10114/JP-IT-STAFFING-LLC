@@ -1,10 +1,13 @@
+'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -37,7 +40,7 @@ export default function Layout({ children }) {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-colors ${
-                router.pathname === item.href
+                pathname === item.href
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
