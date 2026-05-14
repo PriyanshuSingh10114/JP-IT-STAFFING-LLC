@@ -39,12 +39,12 @@ class LinkedInAutomationService {
       // Load saved session if it exists
       if (fs.existsSync(this.sessionPath)) {
         logger.info('Loading saved LinkedIn session');
-        this.context = await this.browser.createBrowserContext({
+        this.context = await this.browser.newContext({
           storageState: this.sessionPath,
         });
       } else {
         logger.info('Creating new LinkedIn browser context');
-        this.context = await this.browser.createBrowserContext();
+        this.context = await this.browser.newContext();
       }
 
       this.page = await this.context.newPage();
@@ -71,8 +71,8 @@ class LinkedInAutomationService {
       logger.info(`Attempting to login to LinkedIn with email: ${email}`);
 
       await this.page.goto('https://www.linkedin.com/login', {
-        waitUntil: 'networkidle',
-        timeout: 30000,
+        waitUntil: 'domcontentloaded',
+        timeout: 60000,
       });
 
       // Enter email
@@ -87,7 +87,7 @@ class LinkedInAutomationService {
       await this.page.click('button[type="submit"]');
 
       // Wait for navigation to complete
-      await this.page.waitForLoadState('networkidle', { timeout: 30000 });
+      await this.page.waitForLoadState('domcontentloaded');
 
       logger.info('LinkedIn login successful');
 
